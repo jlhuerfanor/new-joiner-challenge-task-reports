@@ -16,5 +16,6 @@ func GetConfiguration() model.ApplicationConfig {
 	return model.ApplicationConfig {
 		Port: port,
 		ContextPath: "/wap/task-reports",
-		TaskClient: model.TaskClientConfig{ BaseUrl: "https://joiner-tasks.herokuapp.com/wap/tasks" } }
+		TaskClient: model.TaskClientConfig{ BaseUrl: "https://joiner-tasks.herokuapp.com/wap/tasks" },
+		JoinerClient: model.JoinerClientConfig{ BaseUrl: "https://new-joiners.herokuapp.com/wap/new-joiners" } }
 }
