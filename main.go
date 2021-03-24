@@ -19,7 +19,9 @@ func handleRequests(config model.ApplicationConfig) {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc(fmt.Sprintf("%v/", config.ContextPath), homePage)
 	router.HandleFunc(fmt.Sprintf("%v/status",  config.ContextPath), controller.GetStatus).Methods("GET")
-	log.Fatal(http.ListenAndServe(":10000", router))
+
+	log.Printf("Starting service with port %v and context path %v", config.Port, config.ContextPath)
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%v", config.Port), router))
 }
 
 func main() {
