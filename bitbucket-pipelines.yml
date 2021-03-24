@@ -1,0 +1,55 @@
+#  Template Go (Golang) build
+
+#  This template allows you to validate your Go (Golang) code.
+#  The workflow allows running tests, build and code linting on the default branch.
+
+image: golang:1.15
+
+pipelines:
+  branches:
+    develop:
+        - parallel:
+            - step:
+                name: Test and Build
+                script:
+                  - mkdir test-reports
+                  - go get -u github.com/jstemmer/go-junit-report
+                  - go test bitbucket.org/new-joiners/taskreports/business bitbucket.org/new-joiners/taskreports/service/implementation -v 2>&1 | go-junit-report > test-reports/report.xml
+                  # Build compiles the packages
+                  - go build src/*
+            - step:
+                name: Lint code
+                image: golangci/golangci-lint:v1.31.0
+                script:
+                  - golangci-lint run -v
+    master:
+        - parallel:
+            - step:
+                name: Test and Build
+                script:
+                  - mkdir test-reports
+                  - go get -u github.com/jstemmer/go-junit-report
+                  - go test bitbucket.org/new-joiners/taskreports/business bitbucket.org/new-joiners/taskreports/service/implementation -v 2>&1 | go-junit-report > test-reports/report.xml
+                  # Build compiles the packages
+                  - go build
+            - step:
+                name: Lint code
+                image: golangci/golangci-lint:v1.31.0
+                script:
+                  - golangci-lint run -v
+            - step:
+                name: Deploy to production
+                deployment: production
+                trigger: manual
+                script:
+                  - git archive --format=tar.gz master -o taskreports.tar.gz
+                  - pipe: atlassian/heroku-deploy:1.2.1
+                    variables:
+                      HEROKU_API_KEY: $HEROKU_API_KEY
+                      HEROKU_APP_NAME: 'taskreports'
+                      ZIP_FILE: 'taskreports.tar.gz'
+                      WAIT: 'true'
+                      # Optional.
+                      # DEBUG: '<boolean>' # Optional
+                artifacts:
+                  - taskreports.tar.gz
