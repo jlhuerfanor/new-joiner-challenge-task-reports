@@ -2,16 +2,17 @@ package controller
 
 import (
 	"bitbucket.org/new-joiners/taskreports/business"
-	"github.com/golobby/container"
-	"net/http"
 	"encoding/json"
+	"github.com/golobby/container"
 	"log"
+	"net/http"
 )
 
-func GetStatus(w http.ResponseWriter, r *http.Request) {
+func GetStatus(w http.ResponseWriter, _ *http.Request) {
 	container.Make(func (statusSrv business.GetStatusBusiness) {
 		var status = statusSrv.GetStatus()
 		log.Printf("%+v", status)
-		json.NewEncoder(w).Encode(status)
+		err := json.NewEncoder(w).Encode(status)
+		log.Print(err)
 	})
 }
