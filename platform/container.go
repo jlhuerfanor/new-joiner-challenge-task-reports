@@ -7,4 +7,6 @@ import (
 
 func ConfigureContainer(config model.ApplicationConfig) {
 	application.ConfigureStatusDomain()
+	application.ConfigureTaskDomain(config)
+	application.ConfigureJoinerDomain(config)
 }
